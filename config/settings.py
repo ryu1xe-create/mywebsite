@@ -123,3 +123,37 @@ AUTH_USER_MODEL = 'manga_app.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+import os
+import dj_database_url
+
+# 1. SECRET_KEY болон DEBUG тохиргоо
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-key')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+ALLOWED_HOSTS = ['*']
+
+# 2. MIDDLEWARE хэсэгт WhiteNoise нэмэх (SecurityMiddleware-ийн доор)
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Энэ мөрийг нэмнэ
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+
+# 3. DATABASES тохиргоо (Render-ийн PostgreSQL URL-ийг уншина)
+DATABASES = {
+    'default': dj_database_url.config(
+        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
+}
+
+# 4. STATIC файлуудын тохиргоо (Файлын хамгийн доор нэмнэ)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
